@@ -19,7 +19,14 @@
 // size가 0이면 NULL을 반환한다.
 // 사용법: sh_malloc(5)
 void* sh_malloc(int size){
-    //TODO
+    void* memory ;
+    if(size == 0) return NULL ;
+    else
+    {
+        memory = (void*)malloc(size+4);
+        ((int*)memory)[0] = size ;    // my : ((int*)memory)[size] = size ; return memory
+        return (char*)memory+4 ;
+    }
 }
 
 // 할당받은 메모리를 해제해준다.
@@ -27,7 +34,7 @@ void* sh_malloc(int size){
 // sh_free 로 해제한 메모리 공간은 더이상 사용이 불가능하다.
 // 사용법: sh_free(p)
 void sh_free(void* ptr){
-    //TODO
+    free((int*)ptr-1);    // 보이드라 인트해야
 }
 
 // elementSize크기의 변수 elementCount 개를 저장할 수 있는 배열을 할당한 뒤, 배열의 모든 값을 0으로 초기화시킨다.
@@ -35,7 +42,10 @@ void sh_free(void* ptr){
 // 두 인자 중 하나가 0이면 NULL을 반환한다.
 // 사용법: sh_calloc (100, sizeof(int))
 void* sh_calloc(int elementCount, int elementSize){
-    //TODO
+    int* memory ;
+    memory = (int*)sh_malloc(elementCount * elementSize);
+    for(int i=0 ; i<elementCount ; i++) *(memory+i) = 0 ;
+    return memory ;
 }
 
 // 실제 realloc 과 동작이 다르다.
@@ -46,5 +56,25 @@ void* sh_calloc(int elementCount, int elementSize){
 // 예를 들어, p = sh_malloc(100) 이후에 sh_realloc(p, 99)를 한다면 그대로 p를 반환해야만 한다. (실제 realloc은 이런 제한이 없음)
 // 사용법: sh_realloc(p, 1000)
 void* sh_realloc(void *oldPtr, int newSize){
-    //TODO
+    int oldSize = *((int*)oldPtr - 1);
+    if(newSize == 0) sh_free(oldPtr);
+    else if(oldSize <= newSize) return oldPtr ;
+    else if(oldSize > newSize) 
+    {
+        void* newPtr = (int*)sh_malloc(newSize); // vod* newPtr로도 ㄱㄴ... 차피 이 함수가 void* 로 리턴해서 ㄴ상관 이리메라
+        return newPtr ;                          // 위의 줄 생략하고 return sh_malloc(newSize) 가능 이리메라
+    }
+}
+
+int main()
+{
+    int* a ;
+    // a = (int*)malloc(5);
+    a = (int*)sh_calloc(5,sizeof(int));
+    for(int i=0 ; i<5 ; i++) printf("%d ", a[i]);
+    printf("\n");
+
+    a = (int*)sh_realloc(a, 6*sizeof(int));
+    for(int i=0 ; i<6 ; i++) printf("%d ", a[i]);
+    printf("\n");
 }
