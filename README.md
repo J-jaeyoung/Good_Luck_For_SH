@@ -7,6 +7,8 @@ oh i am the first slave of professor-jung
 - git usage
 - pointer study
 - malloc/free
+- SH_Malloc lab
 
 # TODO
-- SH_Malloc lab
+- gdb
+- SH shell
